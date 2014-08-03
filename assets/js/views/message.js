@@ -8,6 +8,7 @@ var MessageView = Backbone.View.extend({
   render: function() {
     var nick = this.model.get('sender') || this.model.collection.channel.get('name');
     var html;
+    var nickClass = this.getNickClass(nick.substring(0,1));
 
     if (_.include(['join', 'part', 'nick', 'topic', 'quit', 'mode'], this.model.get('type')))
       html = this.setText(this.model.get('type'));
@@ -15,6 +16,7 @@ var MessageView = Backbone.View.extend({
     else if (this.model.get('text') && this.model.get('text').substr(1, 6) === 'ACTION') {
       html = ich.action({
         user: nick,
+        userClass: nickClass,
         content: this.model.get('text').substr(8),
         renderedTime: utils.formatDate(Date.now())
       }, true);
@@ -22,6 +24,7 @@ var MessageView = Backbone.View.extend({
     } else {
       html = ich.message({
         user: nick,
+        userClass: nickClass,
         type: this.model.get('type'),
         content: this.model.get('text'),
         renderedTime: utils.formatDate(Date.now())
@@ -34,8 +37,23 @@ var MessageView = Backbone.View.extend({
       html = this.model.parse(html);
     }
 
+
     $(this.el).html(html);
     return this;
+  },
+
+  getNickClass: function(letter){
+    if(letter < 'e'){
+      return 'color-1';
+    } else if(letter < 'j'){
+      return 'color-2';
+    } else if(letter < 'o'){
+      return 'color-3';
+    }else if(letter < 't'){
+      return 'color-4';
+    }else {
+      return 'color-5';
+    }
   },
 
   // Set output text for status messages
